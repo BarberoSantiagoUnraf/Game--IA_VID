@@ -1,0 +1,66 @@
+{"frames": [
+
+{
+	"filename": "Boton_Controls.png",
+	"frame": {"x":0,"y":0,"w":368,"h":103},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":368,"h":103},
+	"sourceSize": {"w":368,"h":103},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "Boton_ControlsPress.png",
+	"frame": {"x":368,"y":0,"w":368,"h":103},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":368,"h":103},
+	"sourceSize": {"w":368,"h":103},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "Boton_Play.png",
+	"frame": {"x":0,"y":206,"w":364,"h":132},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":364,"h":132},
+	"sourceSize": {"w":364,"h":132},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "Boton_PlayPress.png",
+	"frame": {"x":364,"y":206,"w":364,"h":132},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":364,"h":132},
+	"sourceSize": {"w":364,"h":132},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "Boton_Settings.png",
+	"frame": {"x":0,"y":103,"w":368,"h":103},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":368,"h":103},
+	"sourceSize": {"w":368,"h":103},
+	"pivot": {"x":0.5,"y":0.5}
+},
+{
+	"filename": "Boton_SettingsPress.png",
+	"frame": {"x":368,"y":103,"w":368,"h":103},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":368,"h":103},
+	"sourceSize": {"w":368,"h":103},
+	"pivot": {"x":0.5,"y":0.5}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "Atlas_Buttons.png",
+	"format": "RGBA8888",
+	"size": {"w":736,"h":338},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:a211e4abb6cd79daafb974df4a4b10be:f9a3f3302f6744741e48ed655b902a46:899542626fdc01cfa1849a825ccd2b16$"
+}
+}
