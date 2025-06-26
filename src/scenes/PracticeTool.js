@@ -11,7 +11,7 @@ export class PracticeTool extends Phaser.Scene {
     this.load.image("pj", "./public/Assets/PJ-00.png");
     this.load.image("pj2", "./public/Assets/Pinzas-00.png");
     this.load.image("BG_PT", "./public/Assets/Background-PracticeTool.png");
-    this.load.spritesheet("teclas", "./public/Assets/teclas.png", {
+    this.load.spritesheet("teclas", "Assets/teclas.png", {
       frameWidth: 22,
       frameHeight: 22,
     });
