@@ -23,6 +23,13 @@ class ButtonHandler {
       .on("pointerover", () => pointerOverHandler(scene, this.Button))
       .on("pointerout", () => pointerOutHandler(scene, this.Button));
   }
+
+  destroy() {
+    if (this.Button) {
+      this.Button.destroy();
+      this.Button = null;
+    }
+  }
 }
 
 export default ButtonHandler;

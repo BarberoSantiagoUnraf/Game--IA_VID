@@ -24,7 +24,7 @@ export class mainmenu extends Phaser.Scene {
       "Buttons",
       "Boton_Play.png",
       220,
-      482,
+      462,
       (level, button) => this.BplayDown(level, button),
       (level, button) => this.BplayOver(level, button),
       (level, button) => this.BplayOut(level, button)
@@ -35,7 +35,7 @@ export class mainmenu extends Phaser.Scene {
       "Buttons",
       "Boton_Settings.png",
       220,
-      605,
+      585,
       (level, button) => this.BSettingsDown(level, button),
       (level, button) => this.BSettingsOver(level, button),
       (level, button) => this.BSettingsOut(level, button)
@@ -46,7 +46,7 @@ export class mainmenu extends Phaser.Scene {
       "Buttons",
       "Boton_Controls.png",
       220,
-      728,
+      695,
       (level, button) => this.BControlsDown(level, button),
       (level, button) => this.BControlsOver(level, button),
       (level, button) => this.BControlsOut(level, button)
@@ -67,6 +67,7 @@ export class mainmenu extends Phaser.Scene {
   //handler Boton de settings
   BSettingsDown(level, button) {
     //do nothing for the moment;
+    level.scene.start("PracticeTool");
   }
   BSettingsOver(level, button) {
     button.setTexture("Buttons", "Boton_SettingsPress.png");
