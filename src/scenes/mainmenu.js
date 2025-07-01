@@ -30,23 +30,12 @@ export class mainmenu extends Phaser.Scene {
       (level, button) => this.BplayOut(level, button)
     );
 
-    const BSetting = new ButtonHandler(
-      this,
-      "Buttons",
-      "Boton_Settings.png",
-      220,
-      585,
-      (level, button) => this.BSettingsDown(level, button),
-      (level, button) => this.BSettingsOver(level, button),
-      (level, button) => this.BSettingsOut(level, button)
-    );
-
     const BControls = new ButtonHandler(
       this,
       "Buttons",
       "Boton_Controls.png",
       220,
-      695,
+      595,
       (level, button) => this.BControlsDown(level, button),
       (level, button) => this.BControlsOver(level, button),
       (level, button) => this.BControlsOut(level, button)
@@ -55,25 +44,13 @@ export class mainmenu extends Phaser.Scene {
   }
   //handler Boton de play
   BplayDown(level, button) {
-    level.scene.start("Play");
+    level.scene.start("PracticeTool");
   }
   BplayOver(level, button) {
     button.setTexture("Buttons", "Boton_PlayPress.png");
   }
   BplayOut(level, button) {
     button.setTexture("Buttons", "Boton_Play.png");
-  }
-
-  //handler Boton de settings
-  BSettingsDown(level, button) {
-    //do nothing for the moment;
-    level.scene.start("PracticeTool");
-  }
-  BSettingsOver(level, button) {
-    button.setTexture("Buttons", "Boton_SettingsPress.png");
-  }
-  BSettingsOut(level, button) {
-    button.setTexture("Buttons", "Boton_Settings.png");
   }
 
   //handler Boton de Controls
@@ -86,7 +63,4 @@ export class mainmenu extends Phaser.Scene {
   BControlsOut(level, button) {
     button.setTexture("Buttons", "Boton_Controls.png");
   }
-
-  
-
 }

@@ -1,17 +1,16 @@
 //Stadisticas
-let EnergyMax = 1000
-let Energy = EnergyMax // Energia inicial
-let Vida = 20
-let ConsPasivo = 0.1
+let EnergyMax = 1000;
+let Energy = EnergyMax; // Energia inicial
+let Vida = 20;
+let ConsPasivo = 0.1;
 let ConsActivo = 1; // lo que consume cada accion
 let ConsCantidad = 0; //cantidad de acciones de consumo
-let Zoom = false
-let MaxSpeed = 20
+let Zoom = false;
 
-export class Play extends Phaser.Scene {
+export class copiPlay extends Phaser.Scene {
   constructor() {
     // Se asigna una key para despues poder llamar a la escena
-    super("Play");
+    super("copiPlay");
   }
 
   preload() {
@@ -37,12 +36,19 @@ export class Play extends Phaser.Scene {
     //creacion mapa
     this.add.image(0, 0, "background");
     // HUD debe de estar ultimo
-    this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, "HUD").setScrollFactor(0).setDepth(5);
+    this.add
+      .image(this.cameras.main.centerX, this.cameras.main.centerY, "HUD")
+      .setScrollFactor(0)
+      .setDepth(5);
     // creacion pj
     this.player = this.matter.add.sprite(0, 0, "pj").setDepth(4);
     // Ajusta el tamaño de la colisión
     this.player.setSize(60, 60);
-    this.pinzas = this.matter.add.image(0, 0, "Pinzas").setOrigin(0.5, -0.25).setCircle(35, 3, 15);
+    // No world bounds: do not set any bounds for the Matter world
+    this.pinzas = this.matter.add
+      .image(0, 0, "Pinzas")
+      .setOrigin(0.5, -0.25)
+      .setCircle(35, 3, 15);
     //la camara sigue al player
     this.cameras.main.startFollow(this.player);
 
@@ -70,7 +76,6 @@ export class Play extends Phaser.Scene {
         }
       });
     }
-
     // Evento de overlap: recarga 5 de energía por segundo mientras el player está sobre cualquier charger
     this.matter.world.on("collisionactive", (event) => {
       event.pairs.forEach((pair) => {
@@ -110,7 +115,7 @@ export class Play extends Phaser.Scene {
         });
       });
     });
-
+    
     // Crear enemigos Virus0 cada 3 segundos, máximo 10
     this.virusGroup = this.add.group();
     this.time.addEvent({
@@ -202,6 +207,7 @@ export class Play extends Phaser.Scene {
   }
 
   update() {
+    
     if (this.cursors.left.isDown) {
       this.player.rotation -= 0.08;
       this.pinzas.rotation = this.player.rotation;
@@ -217,6 +223,7 @@ export class Play extends Phaser.Scene {
       }
       this.leftWasDown = false;
     }
+    
     if (this.cursors.right.isDown) {
       this.player.rotation += 0.08;
       this.pinzas.rotation = this.player.rotation;
@@ -236,64 +243,43 @@ export class Play extends Phaser.Scene {
     if (this.cursors.up.isDown) {
       // Calculate thrust vector based on rotation
       const angle = this.player.rotation - Math.PI / 2;
-      const thrust = -3;
+      const thrust = -15;
       if (!this.upWasDown) {
-      ConsCantidad += 1;
-      this.upWasDown = true;
+        ConsCantidad += 1;
+        this.upWasDown = true;
       }
       this.Consumo();
-      // Calculate new velocity
-      let vx = this.player.body.velocity.x + Math.cos(angle) * thrust;
-      let vy = this.player.body.velocity.y + Math.sin(angle) * thrust;
-      // Limit speed
-      const speed = Math.sqrt(vx * vx + vy * vy);
-      if (speed > MaxSpeed) {
-      const scale = MaxSpeed / speed;
-      vx *= scale;
-      vy *= scale;
-      }
-      this.player.setVelocity(vx, vy);
+      this.player.body.velocity.x += Math.cos(angle) * thrust;
+      this.player.body.velocity.y += Math.sin(angle) * thrust;
     }
     if (this.cursors.up.isUp) {
       if (this.upWasDown) {
-      ConsCantidad -= 1;
+        ConsCantidad -= 1;
       }
       this.upWasDown = false;
     }
     if (this.cursors.down.isDown) {
       // Calculate thrust vector based on rotation
       const angle = this.player.rotation - Math.PI / 2;
-      const thrust = 3;
+      const thrust = 15;
       if (!this.downWasDown) {
-      ConsCantidad += 1;
-      this.downWasDown = true;
+        ConsCantidad += 1;
+        this.downWasDown = true;
       }
-      // Calculate new velocity
-      let vx = this.player.body.velocity.x + Math.cos(angle) * thrust;
-      let vy = this.player.body.velocity.y + Math.sin(angle) * thrust;
-      // Limit speed
-      const speed = Math.sqrt(vx * vx + vy * vy);
-      if (speed > MaxSpeed) {
-      const scale = MaxSpeed / speed;
-      vx *= scale;
-      vy *= scale;
-      }
-      this.player.setVelocity(vx, vy);
       this.Consumo();
+      this.player.body.velocity.x += Math.cos(angle) * thrust;
+      this.player.body.velocity.y += Math.sin(angle) * thrust;
     }
-    if (this.cursors.down.isUp) {
+    if (this.cursors.left.isUp) {
       if (this.downWasDown) {
-      ConsCantidad -= 1;
+        ConsCantidad -= 1;
       }
       this.downWasDown = false;
     }
     // Apply drag
-    this.player.setVelocity(
-      this.player.body.velocity.x * 0.97,
-      this.player.body.velocity.y * 0.97
-    );
+    this.player.body.velocity.x *= 0.97;
+    this.player.body.velocity.y *= 0.97;
   }
-
 
   //FUNCIONES
   getEnerPorc() {
@@ -309,7 +295,6 @@ export class Play extends Phaser.Scene {
       if (Energy > 0) {
         Energy = Energy - ConsActivo * ConsCantidad; // consumo activo de energia
         this.lastConsumoTime = this.time.now;
-      }
-    }
+      }}
   }
 }

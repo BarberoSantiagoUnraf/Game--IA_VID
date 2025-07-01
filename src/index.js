@@ -1,8 +1,6 @@
 
 import { mainmenu } from "./scenes/mainmenu.js";
-import { Play } from "./scenes/game.js";
 import { PracticeTool } from "./scenes/PracticeTool.js";
-//import { Retry } from "./scenes/retry.js";
 
 const config = {
   type: Phaser.AUTO,
@@ -28,7 +26,7 @@ const config = {
     },
   },
   //agregar escena al completarla!!!!!!!!!
-  scene: [ mainmenu, Play, PracticeTool], // Listado de todas las escenas del juego, en orden
+  scene: [ mainmenu, PracticeTool], // Listado de todas las escenas del juego, en orden
   // La primera escena es con la cual empieza el juego
 };
 
