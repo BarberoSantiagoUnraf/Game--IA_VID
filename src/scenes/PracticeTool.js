@@ -23,6 +23,7 @@ export class PracticeTool extends Phaser.Scene {
     this.load.image("Pinzas", "./public/Assets/Pinzas-00.png");
     this.load.image("BG_PT", "./public/Assets/Background.png");
     this.load.image("HUD", "./public/Assets/HUD-Background.png");
+    this.load.image("Board", "./public/Assets/Libreta.png");
     this.load.spritesheet("teclas", "./public/Assets/Teclas.png", {
       frameWidth: 66,
       frameHeight: 66,
@@ -31,12 +32,9 @@ export class PracticeTool extends Phaser.Scene {
 
   create() {
     // Fondo del menú principal
-    this.add.image(
-      this.cameras.main.centerX,
-      this.cameras.main.centerY,
-      "BG_PT"
-    );
+    this.add.image(this.cameras.main.centerX,this.cameras.main.centerY,"BG_PT");
     this.add.image(0, 0, "HUD").setOrigin(0, 0);
+    this.add.image( 880, 64, "Board").setOrigin(0, 0);
     // Array para determinar las combinaciones de teclas
     this.paresAleatorios = [];
     for (let i = 0; i < 8; i++) {
@@ -60,6 +58,8 @@ export class PracticeTool extends Phaser.Scene {
     const AA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     const DD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
+    // boolean InGame
+    this.InGame = false;
     this.BPlay = new ButtonHandler(
       this,
       "Buttons",
@@ -75,87 +75,121 @@ export class PracticeTool extends Phaser.Scene {
     this.tiempo = 60;
     this.tiempoRestante = this.tiempo; // segundos
     this.timerText = this.add
-      .text(this.cameras.main.width - 500, 20,`Tiempo: ${this.tiempoRestante}`,
-        {
+      .text(this.cameras.main.width - 145, 105,`${this.tiempoRestante}.s`, {
           fontFamily: '"Tektur", Arial, sans-serif',
-          fontSize: "64px",
-          color: "#67d936",
-        }
-      )
+          fontSize: "48px",
+          color: "#67d936",})
       .setDepth(6);
-
+    // numero de TESTs
+    this.TESTnum = 0;
+    this.TESTtext = this.add
+      .text(this.cameras.main.width - 290, 110,`${this.TESTnum}`, {
+          fontFamily: '"Tektur", Arial, sans-serif',
+          fontSize: "48px",
+          color: "#67d936",})
+      .setDepth(6);
+    //Interacciones
+    this.Interactions = 0;
+    this.interactionsText = this.add
+      .text(this.cameras.main.width - 145, 175, `${this.Interactions}`, {
+      fontFamily: '"Tektur", Arial, sans-serif',
+        fontSize: "36px",
+        color: "#67d936",
+    })
+    //interacciones correctas
+    this.InteractionsCorrect = 0;
+    this.CorrectText = this.add
+      .text(this.cameras.main.width - 145, 230, `${this.InteractionsCorrect}`, {
+      fontFamily: '"Tektur", Arial, sans-serif',
+        fontSize: "36px",
+        color: "#67d936",
+    })
+    //In a row
     this.Combos = 0;
     this.comboText = this.add
-      .text(
-        this.cameras.main.width - 500, 100, `Combos: ${this.Combos}`, {
+      .text(this.cameras.main.width - 145, 285, `${this.Combos}`,{
         fontFamily: '"Tektur", Arial, sans-serif',
-        fontSize: "48px",
+        fontSize: "36px",
         color: "#67d936",
-      })
+    }).setDepth(6);
+    // best in a row
+    this.bestCombo = 0;
+    this.bestcomboText = this.add
+      .text(this.cameras.main.width - 145, 340, `${this.bestCombo}`,{
+        fontFamily: '"Tektur", Arial, sans-serif',
+        fontSize: "36px",
+        color: "#67d936",
+    }).setDepth(6);
+    // MISSEs
+    this.erradas = 0;
+    this.erradasText = this.add
+      .text(this.cameras.main.width - 145, 395, `${this.erradas}`,{
+        fontFamily: '"Tektur", Arial, sans-serif',
+        fontSize: "36px",
+        color: "#67d936",
+    }).setDepth(6);
+    // Porcentaje de presicion
+    this.precision = 0;
+    this.precisionText = this.add
+      .text(this.cameras.main.width - 145, 450, `${this.precision}%`,{
+        fontFamily: '"Tektur", Arial, sans-serif',
+        fontSize: "36px",
+        color: "#67d936",
+    }).setDepth(6);
+    //tiempo de reaccion
+    this.Reaccion = 0;
+    this.ReaccionText = this.add
+      .text(this.cameras.main.width - 145, 502, `${this.Reaccion}%`,{
+        fontFamily: '"Tektur", Arial, sans-serif',
+        fontSize: "36px",
+        color: "#67d936",
+    }).setDepth(6);
+    //mejor tiempo de reaccion
+    this.bestReaccion = 0;
+    this.bestReaccionText = this.add
+      .text(this.cameras.main.width - 145, 555, `${this.bestReaccion}`,{
+        fontFamily: '"Tektur", Arial, sans-serif',
+        fontSize: "36px",
+        color: "#67d936",
+    }).setDepth(6);
+    // resultado
+    this.score = 0;
+    this.scoreText = this.add
+      .text(this.cameras.main.width - 50, 620, `${this.score}`, {
+      fontFamily: '"Tektur", Arial, sans-serif',
+      fontSize: "48px",
+      color: "#67d936",
+      align: "Right",
+      }).setOrigin(1, 0)
       .setDepth(6);
 
     // Array para acumular las últimas 2 teclas presionadas
     this.ultimasTeclas = [];
 
-    // Función para registrar la tecla presionada
-    const registrarTecla = (tecla) => {
-      this.ultimasTeclas.push(tecla);
-      // Mostrar la primera tecla
-      if (!this.vertecla1 && this.ultimasTeclas.length === 1) {
-        this.vertecla1 = this.add.image(
-          this.player.x - 40, this.player.y + 80, "teclas", this.ultimasTeclas[0]
-        );
-      } else if (this.ultimasTeclas.length === 1 && this.vertecla1) {
-        this.vertecla1.setFrame(this.ultimasTeclas[0]);
-      }
-      // Mostrar la segunda tecla
-      if (this.ultimasTeclas.length === 2) {
-        if (!this.vertecla2) {
-          this.vertecla2 = this.add.image(
-            this.player.x + 40, this.player.y + 80, "teclas", this.ultimasTeclas[1]
-          );
-        } else {
-          this.vertecla2.setFrame(this.ultimasTeclas[1]);
-        }
-        this.verificarTeclas();
-      }
-    };
-
     // Registrar eventos para las flechas
-    this.input.keyboard.on("keydown-UP", () => registrarTecla(2));
-    this.input.keyboard.on("keydown-DOWN", () => registrarTecla(3));
-    this.input.keyboard.on("keydown-LEFT", () => registrarTecla(0));
-    this.input.keyboard.on("keydown-RIGHT", () => registrarTecla(1));
+    this.input.keyboard.on("keydown-UP", () => this.registrarTecla(2));
+    this.input.keyboard.on("keydown-DOWN", () => this.registrarTecla(3));
+    this.input.keyboard.on("keydown-LEFT", () => this.registrarTecla(0));
+    this.input.keyboard.on("keydown-RIGHT", () => this.registrarTecla(1));
 
     // Mueve los listeners aquí:
     WW.on("down", () => {
-      registrarTecla(4);
+      this.registrarTecla(4);
     });
     SS.on("down", () => {
-      registrarTecla(6);
+      this.registrarTecla(6);
     });
     AA.on("down", () => {
-      registrarTecla(5);
+      this.registrarTecla(5);
     });
     DD.on("down", () => {
-      registrarTecla(7);
+      this.registrarTecla(7);
     });
     this.input.keyboard.on("keydown-X", () => {
-      this.verificarTeclas();
+      this.tiempoRestante = 1;
     });
 
-    // Inicializar el score y el historial de líneas
-    this.score = 0;
-
-    // Mostrar el score en la esquina superior izquierda
-    this.scoreText = this.add
-      .text(this.cameras.main.width - 500, 160, `Score: ${this.score}`, {
-        fontFamily: '"Tektur", Arial, sans-serif',
-        fontSize: "48px",
-        color: "#67d936",
-        align: "left",
-      })
-      .setOrigin(0, 0);
+    
   }
 
   // FUNCOINES NO HAY UPDATE POR EL MOMENTO
@@ -177,7 +211,6 @@ export class PracticeTool extends Phaser.Scene {
       ),
     ];
   }
-
   ParRightUP() {
     return [
       this.add.image(
@@ -194,7 +227,6 @@ export class PracticeTool extends Phaser.Scene {
       ).setDepth(6),
     ];
   }
-
   ParRIGHT() {
     return [
       this.add.image(
@@ -259,7 +291,6 @@ export class PracticeTool extends Phaser.Scene {
       ).setDepth(6),
     ];
   }
-
   ParLEFT() {
     return [
       this.add.image(
@@ -294,25 +325,16 @@ export class PracticeTool extends Phaser.Scene {
   }
 
   BplayDown(level, button) {
-    this.timerText.setText(`Tiempo: ${this.tiempoRestante}`);
-    if (!this.player) {
-      this.player = this.add.image(
-        455,
-        385,
-        "pj"
-      );
-      this.pinzas = this.add.image(455, 385, "Pinzas").setOrigin(0.5, -0.4);
-    }
+    this.player = this.add.image(455, 385, "pj").setOrigin(0.5, 0.35);
     this.ParOrdenado();
-    // Si ya hay un evento de tiempo, no crear otro
-    if (this.timeEvent && this.timeEvent.getProgress() < 1) {
-      return;
-    }
+    this.TESTnum += 1;
+    this.TESTtext.setText(`${this.TESTnum}`);
+    this.InGame = true;
     this.timeEvent = this.time.addEvent({
       delay: 1000,
       callback: () => {
         this.tiempoRestante--;
-        this.timerText.setText(`Tiempo: ${this.tiempoRestante}`);
+        this.timerText.setText(`${this.tiempoRestante}.s`);
         if (this.tiempoRestante <= 0) {
           this.timeEvent.remove();
           this.parUPImages?.forEach((image) => image.destroy());
@@ -324,7 +346,7 @@ export class PracticeTool extends Phaser.Scene {
           this.parLEFTImages?.forEach((image) => image.destroy());
           this.parUPLEFTImages?.forEach((image) => image.destroy());
           this.player?.destroy();
-          this.pinzas?.destroy();
+          this.InGame = false;
           this.BPlay = new ButtonHandler(
             this,
             "Buttons",
@@ -408,50 +430,67 @@ export class PracticeTool extends Phaser.Scene {
     this.elcorrecto = Phaser.Math.Between(0, 7);
     if (this.elcorrecto == 0) {
       this.player.setRotation(Phaser.Math.DegToRad(180));
-      this.pinzas.setRotation(Phaser.Math.DegToRad(180));
     }
     if (this.elcorrecto == 1) {
       this.player.setRotation(Phaser.Math.DegToRad(225));
-      this.pinzas.setRotation(Phaser.Math.DegToRad(225));
     }
     if (this.elcorrecto == 2) {
       this.player.setRotation(Phaser.Math.DegToRad(270));
-      this.pinzas.setRotation(Phaser.Math.DegToRad(270));
     }
     if (this.elcorrecto == 3) {
       this.player.setRotation(Phaser.Math.DegToRad(315));
-      this.pinzas.setRotation(Phaser.Math.DegToRad(315));
     }
     if (this.elcorrecto == 4) {
       this.player.setRotation(Phaser.Math.DegToRad(0));
-      this.pinzas.setRotation(Phaser.Math.DegToRad(0));
     }
     if (this.elcorrecto == 5) {
       this.player.setRotation(Phaser.Math.DegToRad(45));
-      this.pinzas.setRotation(Phaser.Math.DegToRad(45));
     }
     if (this.elcorrecto == 6) {
       this.player.setRotation(Phaser.Math.DegToRad(90));
-      this.pinzas.setRotation(Phaser.Math.DegToRad(90));
     }
     if (this.elcorrecto == 7) {
       this.player.setRotation(Phaser.Math.DegToRad(135));
-      this.pinzas.setRotation(Phaser.Math.DegToRad(135));
     }
   }
+
+  lastVerificarTeclasTime = null;
+
   verificarTeclas() {
+    if (!this.InGame) return;
+    this.Interactions++;
+    this.interactionsText.setText(`${this.Interactions}`);
+    this.precision = this.Interactions > 0 ? Math.round((this.InteractionsCorrect / this.Interactions) * 100) : 0;
+    this.precisionText.setText(`${this.precision}%`);
     const parCorrecto = this.paresAleatorios[this.elcorrecto];
     if (
       this.ultimasTeclas.length === 2 &&
       this.ultimasTeclas[0] === parCorrecto[0] &&
       this.ultimasTeclas[1] === parCorrecto[1]
     ) {
+    const now = this.time.now; // Tiempo actual en ms desde que inició la escena
+    if (this.lastVerificarTeclasTime !== null) {
+      this.Reaccion = now - this.lastVerificarTeclasTime;
+      this.Reaccion = Math.round(this.Reaccion).toString().padStart(3, '0');
+      this.ReaccionText.setText(`${this.Reaccion}`);
+    }
+    this.lastVerificarTeclasTime = now;
+    if (this.Reaccion < this.bestReaccion || this.bestReaccion === 0) {
+      this.bestReaccion = this.Reaccion;
+      this.bestReaccionText.setText(`${this.bestReaccion}`);
+    }
+      this.InteractionsCorrect++;
+      this.CorrectText.setText(`${this.InteractionsCorrect}`);
       this.Combos++;
-      this.score += 20+(this.Combos * 20)*0.2; // Incrementa el score
-      this.comboText.setText(`Combos: ${this.Combos}`);
-      this.scoreText.setText(`Score: ${this.score}`);
-      this.vertecla1?.destroy();
-      this.vertecla2?.destroy();
+      this.comboText.setText(`${this.Combos}`);
+      if (this.Combos > this.bestCombo) {
+        this.bestCombo = this.Combos;
+        this.bestcomboText.setText(`${this.bestCombo}`);
+      }
+      this.score += 20 + (this.Combos * 5); // Incrementa el score
+      this.scoreText.setText(`${this.score}`);
+      this.vertecla1?.setVisible(false);
+      this.vertecla2?.setVisible(false);
       if (this.player) {
         this.player.setTint(0x00ff00);
         this.time.delayedCall(500, () => {
@@ -460,10 +499,12 @@ export class PracticeTool extends Phaser.Scene {
       }
       this.ultimasTeclas.length = 0; // Limpia el array de teclas
     } else {
-      this.Combos = 1;
-      this.comboText.setText(`Combos: ${this.Combos}`);
-      this.vertecla1?.destroy();
-      this.vertecla2?.destroy();
+      this.Combos = 0;
+      this.erradas++;
+      this.erradasText.setText(`${this.erradas}`);
+      this.comboText.setText(`${this.Combos}`);
+      this.vertecla1?.setVisible(false);
+      this.vertecla2?.setVisible(false);
       // Cambia el tinte del jugador a rojo por 0.5 segundos y luego lo restaura
       if (this.player) {
         this.player.setTint(0xff0000);
@@ -475,7 +516,30 @@ export class PracticeTool extends Phaser.Scene {
       console.log(this.ultimasTeclas);
     }
     this.cambiarSeleccion();
-    this.ultimasTeclas = [];
     this.ParOrdenado();
   }
+  //REGISTRAR TECLA
+  registrarTecla(tecla){
+    if (!this.InGame) return;
+      this.ultimasTeclas.push(tecla);
+      // Mostrar la primera tecla
+      if (!this.vertecla1 && this.ultimasTeclas.length === 1 && !!this.player) {
+        this.vertecla1 = this.add.image(
+          this.player.x - 40, this.player.y + 80, "teclas", this.ultimasTeclas[0]
+        );
+      } else if (this.ultimasTeclas.length === 1 && !!this.player){
+        this.vertecla1.setFrame(this.ultimasTeclas[0]).setVisible(true);
+      }
+      // Mostrar la segunda tecla
+      if (this.ultimasTeclas.length === 2 && !this.vertecla2 && !!this.player) {
+          this.vertecla2 = this.add.image(
+            this.player.x + 40, this.player.y + 80, "teclas", this.ultimasTeclas[1]
+          );
+        this.verificarTeclas();
+      } else if (this.ultimasTeclas.length === 2 && !!this.player){
+        this.vertecla2.setFrame(this.ultimasTeclas[1]).setVisible(true);
+        this.verificarTeclas();
+        }  
+    };
+
 }
