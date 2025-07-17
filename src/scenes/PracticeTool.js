@@ -19,10 +19,13 @@ export class PracticeTool extends Phaser.Scene {
 
   preload() {
     // Carga de imagenes
-    this.load.image("pj", "./public/Assets/PJ-00.png");
-    this.load.image("Pinzas", "./public/Assets/Pinzas-00.png");
+    this.load.spritesheet("pj", "./public/Assets/PJ-00.png",{
+      frameWidth: 78,
+      frameHeight: 113,
+    });
     this.load.image("BG_PT", "./public/Assets/Background.png");
     this.load.image("HUD", "./public/Assets/HUD-Background.png");
+    this.load.image("Tutorial", "./public/Assets/Tutorial.png");
     this.load.image("Board", "./public/Assets/Libreta.png");
     this.load.spritesheet("teclas", "./public/Assets/Teclas.png", {
       frameWidth: 66,
@@ -35,6 +38,7 @@ export class PracticeTool extends Phaser.Scene {
     this.add.image(this.cameras.main.centerX,this.cameras.main.centerY,"BG_PT");
     this.add.image(0, 0, "HUD").setOrigin(0, 0);
     this.add.image( 880, 64, "Board").setOrigin(0, 0);
+    this.tuto = this.add.image(20, 20, "Tutorial").setOrigin(0, 0);
     // Array para determinar las combinaciones de teclas
     this.paresAleatorios = [];
     for (let i = 0; i < 8; i++) {
@@ -138,8 +142,9 @@ export class PracticeTool extends Phaser.Scene {
     }).setDepth(6);
     //tiempo de reaccion
     this.Reaccion = 0;
+    this.ReaccionPromedio = [];
     this.ReaccionText = this.add
-      .text(this.cameras.main.width - 145, 502, `${this.Reaccion}%`,{
+      .text(this.cameras.main.width - 145, 502, `${this.ReaccionPromedio}x̄`,{
         fontFamily: '"Tektur", Arial, sans-serif',
         fontSize: "36px",
         color: "#67d936",
@@ -325,6 +330,7 @@ export class PracticeTool extends Phaser.Scene {
   }
 
   BplayDown(level, button) {
+    this.CleanDatta();
     this.player = this.add.image(455, 385, "pj").setOrigin(0.5, 0.35);
     this.ParOrdenado();
     this.TESTnum += 1;
@@ -358,6 +364,7 @@ export class PracticeTool extends Phaser.Scene {
             (level, button) => this.BplayOut(level, button)
           );
           this.tiempoRestante = this.tiempo;
+          this.timerText.setText(`${this.tiempoRestante}.s`);
         }
       },
       callbackScope: this,
@@ -372,7 +379,7 @@ export class PracticeTool extends Phaser.Scene {
     this.parDOWNLEFTImages = this.ParDOWNLEFT();
     this.parLEFTImages = this.ParLEFT();
     this.parUPLEFTImages = this.ParUPLEFT();
-
+    this.tuto?.destroy();
     //destruye el boton, cualquier logica por arriba de esto
     this.BPlay.destroy();
   }
@@ -463,22 +470,26 @@ export class PracticeTool extends Phaser.Scene {
     this.precision = this.Interactions > 0 ? Math.round((this.InteractionsCorrect / this.Interactions) * 100) : 0;
     this.precisionText.setText(`${this.precision}%`);
     const parCorrecto = this.paresAleatorios[this.elcorrecto];
+    const now = this.time.now; // Tiempo actual en ms desde que inició la escena
+    
+    if (this.lastVerificarTeclasTime !== null) {
+      this.Reaccion = now - this.lastVerificarTeclasTime;
+      this.Reaccion = Math.round(this.Reaccion);
+      this.ReaccionPromedio.push(this.Reaccion);
+      const sumaReacciones = this.ReaccionPromedio.reduce((acc, val) => acc + val, 0);
+      const promedioReaccion = Math.round(sumaReacciones / this.ReaccionPromedio.length);
+      this.ReaccionText.setText(`${promedioReaccion}x̄`);
+      if (this.Reaccion < this.bestReaccion || this.bestReaccion === 0) {
+        this.bestReaccion = this.Reaccion;
+        this.bestReaccionText.setText(`${this.bestReaccion}`);
+      }
+    }
+    this.lastVerificarTeclasTime = now;
     if (
       this.ultimasTeclas.length === 2 &&
       this.ultimasTeclas[0] === parCorrecto[0] &&
       this.ultimasTeclas[1] === parCorrecto[1]
     ) {
-    const now = this.time.now; // Tiempo actual en ms desde que inició la escena
-    if (this.lastVerificarTeclasTime !== null) {
-      this.Reaccion = now - this.lastVerificarTeclasTime;
-      this.Reaccion = Math.round(this.Reaccion).toString().padStart(3, '0');
-      this.ReaccionText.setText(`${this.Reaccion}`);
-    }
-    this.lastVerificarTeclasTime = now;
-    if (this.Reaccion < this.bestReaccion || this.bestReaccion === 0) {
-      this.bestReaccion = this.Reaccion;
-      this.bestReaccionText.setText(`${this.bestReaccion}`);
-    }
       this.InteractionsCorrect++;
       this.CorrectText.setText(`${this.InteractionsCorrect}`);
       this.Combos++;
@@ -492,9 +503,9 @@ export class PracticeTool extends Phaser.Scene {
       this.vertecla1?.setVisible(false);
       this.vertecla2?.setVisible(false);
       if (this.player) {
-        this.player.setTint(0x00ff00);
+        this.player.setFrame(1);
         this.time.delayedCall(500, () => {
-          this.player.clearTint();
+          this.player.setFrame(0);
         });
       }
       this.ultimasTeclas.length = 0; // Limpia el array de teclas
@@ -507,13 +518,12 @@ export class PracticeTool extends Phaser.Scene {
       this.vertecla2?.setVisible(false);
       // Cambia el tinte del jugador a rojo por 0.5 segundos y luego lo restaura
       if (this.player) {
-        this.player.setTint(0xff0000);
+        this.player.setFrame(2);
         this.time.delayedCall(500, () => {
-          this.player.clearTint();
+          this.player.setFrame(0);
         });
       }
       this.ultimasTeclas.length = 0; // Limpia el array de teclas
-      console.log(this.ultimasTeclas);
     }
     this.cambiarSeleccion();
     this.ParOrdenado();
@@ -540,6 +550,28 @@ export class PracticeTool extends Phaser.Scene {
         this.vertecla2.setFrame(this.ultimasTeclas[1]).setVisible(true);
         this.verificarTeclas();
         }  
-    };
+  }
+  CleanDatta () {
+    // limpia los datos de la escena
+    this.Interactions = 0;
+    this.InteractionsCorrect = 0;
+    this.Combos = 0;
+    this.bestCombo = 0;
+    this.erradas = 0;
+    this.precision = 0;
+    this.Reaccion = 0;
+    this.bestReaccion = 0;
+    this.score = 0;
+    //limpiar la planilla
+    this.interactionsText.setText(`${this.Interactions}`);
+    this.CorrectText.setText(`${this.InteractionsCorrect}`);
+    this.comboText.setText(`${this.Combos}`);
+    this.bestcomboText.setText(`${this.bestCombo}`);
+    this.erradasText.setText(`${this.erradas}`);
+    this.precisionText.setText(`${this.precision}%`);
+    this.ReaccionText.setText(`${this.Reaccion}x̄`);
+    this.bestReaccionText.setText(`${this.bestReaccion}`);
+    this.scoreText.setText(`${this.score}`);
+  }
 
 }
