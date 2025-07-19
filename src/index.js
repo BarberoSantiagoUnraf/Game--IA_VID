@@ -1,6 +1,8 @@
 
 import { mainmenu } from "./scenes/mainmenu.js";
-import { PracticeTool } from "./scenes/PracticeTool.js";
+import { PracticeToolTCLDO } from "./scenes/PracticeToolTCLDO.js";
+import { PracticeToolJYTCK } from "./scenes/PracticeToolJYTCK.js";
+
 
 const config = {
   type: Phaser.AUTO,
@@ -26,7 +28,7 @@ const config = {
     },
   },
   //agregar escena al completarla!!!!!!!!!
-  scene: [ mainmenu, PracticeTool], // Listado de todas las escenas del juego, en orden
+  scene: [ mainmenu, PracticeToolTCLDO, PracticeToolJYTCK ], // Listado de todas las escenas del juego, en orden
   // La primera escena es con la cual empieza el juego
 };
 

@@ -13,11 +13,19 @@ export class mainmenu extends Phaser.Scene {
       "./public/Assets/Atlas_Buttons.json"
     );
     this.load.image("BG_MM", "./public/Assets/Background_MM.png");
+    this.load.audio("SoundTrackMM", "./public/Assets/SoundTrackMM.wav");
   }
 
   create() {
     // Fondo del menú principal
     this.add.image(this.cameras.main.centerX, this.cameras.main.centerY, "BG_MM");
+    this.ControllerType = false;
+     //Musica de fondo
+    this.soundtrack = this.sound.add("SoundTrackMM", {
+      loop: true,
+      volume: 0.5,
+    });
+    this.soundtrack.play();
 
     const BPLay = new ButtonHandler(
       this,
@@ -44,7 +52,12 @@ export class mainmenu extends Phaser.Scene {
   }
   //handler Boton de play
   BplayDown(level, button) {
-    level.scene.start("PracticeTool");
+    if (!this.ControllerType) {
+      level.scene.start("PracticeToolTCLDO");
+    } else if (this.ControllerType) {
+      level.scene.start("PracticeToolJYTCK");
+    }
+    this.soundtrack.stop();
   }
   BplayOver(level, button) {
     button.setTexture("Buttons", "Boton_PlayPress.png");
@@ -55,7 +68,8 @@ export class mainmenu extends Phaser.Scene {
 
   //handler Boton de Controls
   BControlsDown(level, button) {
-    //do nothing for the moment;
+    this.ControllerType = !this.ControllerType;
+    console.log("Controller Type: " + this.ControllerType);
   }
   BControlsOver(level, button) {
     button.setTexture("Buttons", "Boton_ControlsPress.png");
